@@ -9,43 +9,50 @@ git clone git@github.com:yo-mi2027/mcp_server.git
 cd mcp_server
 ```
 
-### manual-tools（FastAPI サーバー）
+### 初回セットアップ（manual-tools & manual-tools-mcp）
 
-前提: Docker Desktop（もしくは互換エンジン）を起動済みで、`manuals/` と `config.yaml` が揃っていること。
+1. **manual-tools（FastAPI サーバー）**  
+   前提: Docker Desktop（もしくは互換エンジン）を起動済みで、`manuals/` と `config.yaml` が揃っていること。
 
-#### 初回セットアップ
+   ```bash
+   cd manual-tools
+   docker compose up --build
+   ```
 
-```bash
-cd manual-tools
-docker compose up --build
-```
+   - 依存インストールとビルドで数分かかることがありますが、完了すると `http://127.0.0.1:5173` で API が立ち上がります。
+   - 自動リロードが有効なので `app/`・`config.yaml`・`manuals/` を編集すると数秒で反映されます。
 
-- 依存インストールとビルドで数分かかることがありますが、完了すると `http://127.0.0.1:5173` で API が立ち上がります。
-- 自動リロードが有効なので `app/`・`config.yaml`・`manuals/` を編集すると数秒で反映されます。
+2. **manual-tools-mcp（MCP クライアント）**  
+   前提: Node.js 18+ と npm（または互換ツール）がインストールされていること。
 
-#### 2回目以降
+   ```bash
+   cd manual-tools-mcp
+   npm install        # 依存インストール（初回のみ）
+   npm run build      # TypeScript → build/index.js を生成
+   ```
 
-```bash
-cd manual-tools
-docker compose up
-```
+### 2回目以降の起動
 
-- `MANUAL_TOOLS_PORT=5180 docker compose up` のように環境変数でホスト側ポートを変更可能。
-- バックグラウンドで動かすときは `docker compose up -d`、停止は `docker compose down`。
-- 依存や `requirements.txt` を更新したときのみ `docker compose up --build` を再実行します。
+- **manual-tools**
 
-### manual-tools-mcp（MCP クライアント）
+  ```bash
+  cd manual-tools
+  docker compose up
+  ```
 
-前提: Node.js 18+ と npm（または互換ツール）がインストールされていること。
+  - `MANUAL_TOOLS_PORT=5180 docker compose up` のように環境変数でホスト側ポートを変更可能。
+  - バックグラウンドで動かすときは `docker compose up -d`、停止は `docker compose down`。
+  - 依存や `requirements.txt` を更新したときのみ `docker compose up --build` を再実行します。
 
-- ```bash
+- **manual-tools-mcp**
+
+  ```bash
   cd manual-tools-mcp
-  npm install        # 初回のみ
-  npm run build      # TypeScript → build/index.js を生成
   npm start          # = node build/index.js
   ```
-- Claude などの MCP クライアントからアタッチする場合は、`node /path/to/mcp_server/manual-tools-mcp/build/index.js` をコマンドとして指定してください。
-- API のベース URL を切り替える場合は `MANUAL_TOOLS_BASE_URL`（推奨）または `MANUAL_TOOLS_URL` を設定してください。未設定時は `http://127.0.0.1:5173` を参照します。
+
+  - Claude Desktop から MCP attach する場合は、`node /path/to/mcp_server/manual-tools-mcp/build/index.js` をコマンドとして指定してください（config 例: `args: [".../build/index.js"]`）。
+  - API のベース URL を切り替える場合は `MANUAL_TOOLS_BASE_URL`（推奨）または `MANUAL_TOOLS_URL` を設定してください。未設定時は `http://127.0.0.1:5173` を参照します。
 
 ## コントリビュート
 
