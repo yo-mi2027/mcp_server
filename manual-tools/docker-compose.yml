@@ -1,0 +1,12 @@
+services:
+  manual-tools:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 5173 --reload
+    ports:
+      - "${MANUAL_TOOLS_PORT:-5173}:5173"
+    volumes:
+      - .:/app
+    restart: unless-stopped
+

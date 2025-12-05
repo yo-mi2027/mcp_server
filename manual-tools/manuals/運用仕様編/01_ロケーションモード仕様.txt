@@ -1,0 +1,233 @@
+# Location Mode Specification
+
+1. Purpose of this mode
+
+---
+
+* The role of **Location Mode** is:
+
+  > “Given a user question, identify **all** manual sections (chapters) that are relevant to the question, as exhaustively as possible, and return **only** the list of those sections.”
+
+* In this mode, the AI **must not**:
+
+  * Provide detailed explanations of the rules.
+  * Interpret or apply the rules to a concrete case.
+
+* Reading section texts in depth, interpreting the rules, and generating a full answer is the responsibility of **Full Answer Mode**, not Location Mode.
+
+* The output of Location Mode is **only**:
+
+  > “Which sections (manual / section_id / title) should be read?”
+
+No detailed rule explanation is required in this mode.
+
+---
+
+2. Inputs and MCP tools used
+
+---
+
+### 2.1. Input
+
+* Natural-language question text from the user.
+
+### 2.2. MCP tools used
+
+Location Mode may use the following MCP tools (via the manual-tools server):
+
+* `list_manuals`
+* `get_toc`
+* `list_sections` (only when necessary)
+* `search_text`
+* `find_exceptions` (only when the question concerns exceptions / non-covered cases)
+* `get_section` (only to briefly confirm whether a candidate section is actually related to the question)
+
+---
+
+3. Overall flow
+
+---
+
+The basic flow of Location Mode is:
+
+1. **Determine the target manual**.
+2. **Construct the initial candidate section set S0** (Exploration).
+3. **Lightly inspect section texts and narrow down to S1** (Screening).
+4. **Normalize and return S1** (Output).
+
+Here, **S1 is the “final relevant section list”** that will be passed to Full Answer Mode.
+
+---
+
+4. Step 1: Determine the target manual
+
+---
+
+* If the user explicitly specifies a manual name, then:
+
+  * Use **only that manual** as the target.
+
+* If the user does **not** specify a manual:
+
+  * Use the current operational default manual (for example: `"給付金編"`) as the target.
+
+* If necessary, the AI may call `list_manuals` to confirm which manuals are available.
+
+* After deciding the target manual (`manual`), the AI should call `get_toc(manual_name=…)` **once** to obtain:
+
+  * `id` (section_id)
+  * `title`
+  * `file`
+  * `children`
+
+  for all sections in that manual.
+
+* At this stage, the AI **must not** read full section texts.
+  The goal here is only to use titles and structure to get a rough idea of where relevant content may be.
+
+---
+
+5. Step 2: Build the initial candidate set S0 (Exploration)
+
+---
+
+* From the user’s question, extract important keywords and concepts.
+
+* Use `search_text` with those keywords to collect `section_id` values that appear relevant.
+
+* If the question is about **exceptions / non-coverage / “not paid” cases**, also:
+
+  * Call `find_exceptions` for the same manual, and add the `section_id` values from its results to the candidate set.
+
+* Also use the titles obtained from `get_toc`:
+
+  * If a section’s `title` is **obviously related** to the question, you may add its `section_id` to S0 even if it did not appear in the `search_text` results.
+
+* When in doubt about whether a section might be related:
+
+  * **Include** it in S0.
+  * The priority is to **avoid missing relevant sections**, even if that means including some noise.
+
+* If, after using `search_text`, `find_exceptions`, and title matching, the size of S0 is still **extremely small**:
+
+  * The AI should broaden the search slightly, for example:
+
+    * Relax or generalize keywords.
+    * Try synonyms or related concepts.
+  * Then re-run `search_text` and/or `find_exceptions` to rebuild S0.
+
+* Result of this step:
+
+  * S0 = initial candidate section set (may contain some irrelevant sections; that is acceptable at this stage).
+
+---
+
+6. Step 3: Narrow down to S1 via light text inspection (Screening)
+
+---
+
+* For each `section_id` in S0, the AI may call `get_section` **only when needed** to confirm relevance.
+
+* The purpose of this step is **not** to fully read or summarize the section, but to:
+
+  > “Lightly verify whether this section actually deals with the topic of the current question.”
+
+* The AI must **not**:
+
+  * Produce long quotations.
+  * Produce detailed summaries at this stage.
+
+### 6.1. Relevance criteria for each section
+
+For each candidate section, judge its relevance using the following criteria:
+
+* Whether the **section title** contains:
+
+  * Words from the user’s question, or
+  * Very similar / closely related terms.
+
+* How the question’s keywords appear in the `search_text` **snippet**:
+
+  * In what context do these keywords appear?
+  * Do they appear in a context that matches the intent of the question?
+
+* Whether, within the section `text` returned by `get_section`, the main keywords of the question:
+
+  * Appear with **sufficient surrounding context** to indicate the section truly covers that topic.
+
+* For exception-type questions:
+
+  * Whether the section also appears in the `find_exceptions` results.
+
+### 6.2. Forming S1
+
+* Sections that are clearly **almost unrelated** to the question should be removed from the candidate set.
+
+* All remaining sections form **S1**, the **final relevant section set**.
+
+* When unsure about a section’s relevance:
+
+  * **Keep** it in S1.
+  * It is better to include extra sections than to miss a relevant one.
+
+* Only when the number of sections becomes **too large** (for example, many tens of sections), the AI may:
+
+  * Preferentially keep sections with higher relevance signals (title match, strong snippets, etc.), and
+  * Reduce the count, while still trying not to lose clearly relevant sections.
+
+---
+
+7. Step 4: Output format
+
+---
+
+The final output of Location Mode must contain **only** the information below.
+
+* **Relevant section list S1**, where each entry includes:
+
+  * `manual`: manual name
+  * `section_id`: section identifier
+  * `title`: section title
+  * `reason`: a concise explanation (1–3 lines) of **why** this section was judged relevant to the question
+
+### 7.1. Constraints and cautions
+
+* Do **not** include long quotations of section text.
+  If necessary, use only very short phrases as part of the `reason`.
+
+* At this stage, the AI must **not**:
+
+  * Provide a full interpretation of the rules.
+  * Produce a final, consolidated answer to the user’s question.
+
+* **Full Answer Mode** will:
+
+  * Take S1 as input,
+  * Call `get_section` again as needed,
+  * Read section texts in detail,
+  * Organize rule content, and
+  * Generate the final, detailed answer.
+
+Location Mode’s responsibility ends at producing S1.
+
+---
+
+8. Global policy for Location Mode
+
+---
+
+* The **only** job of Location Mode is:
+
+  > “To exhaustively list which sections are relevant to the question.”
+
+* The AI must **not** use static, hard-coded weights for sections.
+  Instead, it must dynamically judge relevance **every time**, based on:
+
+  * The user’s question,
+  * The manual’s table of contents (from `get_toc`),
+  * The section texts (accessed via `search_text`, `find_exceptions`, and `get_section`).
+
+* When in doubt, the AI should **keep** a section as a candidate, rather than discarding it, in order to avoid missing relevant content.
+
+* The AI must **not** over-explain in this mode.
+  Interpretation and integration of rule content is delegated to **Full Answer Mode**.

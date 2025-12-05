@@ -1,0 +1,19 @@
+# macOS cruft
+.DS_Store
+
+# Python backend (manual-tools)
+manual-tools/.venv/
+manual-tools/.pytest_cache/
+manual-tools/.mypy_cache/
+manual-tools/.ruff_cache/
+manual-tools/__pycache__/
+manual-tools/.git/
+
+# Node frontend (manual-tools-mcp)
+manual-tools-mcp/node_modules/
+manual-tools-mcp/.turbo/
+manual-tools-mcp/.next/
+manual-tools-mcp/dist/
+manual-tools-mcp/build/
+manual-tools-mcp/.git/
+

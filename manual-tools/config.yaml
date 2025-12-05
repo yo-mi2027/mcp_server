@@ -1,0 +1,9 @@
+manuals_root: "manuals"
+
+toc:
+  source: json_only
+  path_pattern: "manuals/{manual}/00_目次.json"
+
+validation_mode: relaxed   # 個人利用の方針
+logging:
+  level: INFO              # ここを空にしない（null回避）

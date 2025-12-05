@@ -1,0 +1,66 @@
+{
+  "manual": "雑務用",
+  "toc": [
+    {
+      "id": "01",
+      "title": "スロット01",
+      "file": "01.txt",
+      "children": []
+    },
+    {
+      "id": "02",
+      "title": "スロット02",
+      "file": "02.txt",
+      "children": []
+    },
+    {
+      "id": "03",
+      "title": "スロット03",
+      "file": "03.txt",
+      "children": []
+    },
+    {
+      "id": "04",
+      "title": "スロット04",
+      "file": "04.txt",
+      "children": []
+    },
+    {
+      "id": "05",
+      "title": "スロット05",
+      "file": "05.txt",
+      "children": []
+    },
+    {
+      "id": "06",
+      "title": "スロット06",
+      "file": "06.txt",
+      "children": []
+    },
+    {
+      "id": "07",
+      "title": "スロット07",
+      "file": "07.txt",
+      "children": []
+    },
+    {
+      "id": "08",
+      "title": "スロット08",
+      "file": "08.txt",
+      "children": []
+    },
+    {
+      "id": "09",
+      "title": "スロット09",
+      "file": "09.txt",
+      "children": []
+    },
+    {
+      "id": "10",
+      "title": "スロット10",
+      "file": "10.txt",
+      "children": []
+    }
+  ]
+}
+

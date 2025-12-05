@@ -1,0 +1,21 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual env
+.venv/
+
+# macOS
+.DS_Store
+
+# Logs / runtime
+var/
+*.log
+
+# Generated indices (後で再生成できるなら無視でOK)
+indices/
+
+# Editor stuff
+.vscode/
+.idea/
