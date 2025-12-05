@@ -38,12 +38,13 @@ docker compose up
 
 前提: Node.js 18+ と npm（または互換ツール）がインストールされていること。
 
-```bash
-cd manual-tools-mcp
-npm install       # 初回のみ
-npm run dev       # 開発サーバー
-```
-
+- ```bash
+  cd manual-tools-mcp
+  npm install        # 初回のみ
+  npm run build      # TypeScript → build/index.js を生成
+  npm start          # = node build/index.js
+  ```
+- Claude などの MCP クライアントからアタッチする場合は、`node /path/to/mcp_server/manual-tools-mcp/build/index.js` をコマンドとして指定してください。
 - API のベース URL を切り替える場合は `MANUAL_TOOLS_BASE_URL`（推奨）または `MANUAL_TOOLS_URL` を設定してください。未設定時は `http://127.0.0.1:5173` を参照します。
 
 ## コントリビュート
