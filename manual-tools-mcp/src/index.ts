@@ -87,6 +87,9 @@ type GetSectionResponse = {
   section_id: string;
   title: string;
   text: string;
+  file?: string;
+  encoding?: string;
+  id?: string;
 };
 
 type SearchTextResult = {
@@ -302,6 +305,22 @@ server.registerTool(
         .describe(
           "Full text of the section, with normalized newlines. This is the primary source for reading rules."
         ),
+      file: z
+        .string()
+        .optional()
+        .describe(
+          "Underlying text file name for the section, if provided by the backend."
+        ),
+      encoding: z
+        .string()
+        .optional()
+        .describe("Encoding used for the source text (e.g. 'utf-8')."),
+      id: z
+        .string()
+        .optional()
+        .describe(
+          "Optional backend identifier for the section (defaults to section_id)."
+        ),
     },
   },
   async ({ manual_name, section_id }) => {
@@ -356,6 +375,12 @@ server.registerTool(
         .describe(
           "Optional section ID. If provided, restrict the search to this single section."
         ),
+      case_sensitive: z
+        .boolean()
+        .optional()
+        .describe(
+          "When true, perform a case-sensitive search (backend default is false)."
+        ),
       mode: z
         .enum(["plain", "regex", "loose"])
         .optional()
@@ -390,13 +415,15 @@ server.registerTool(
         ),
     },
   },
-  async ({ manual_name, query, section_id, mode, limit }) => {
+  async ({ manual_name, query, section_id, case_sensitive, mode, limit }) => {
     const body: Record<string, unknown> = {
       manual_name,
       query,
     };
 
     if (section_id) body.section_id = section_id;
+    if (typeof case_sensitive === "boolean")
+      body.case_sensitive = case_sensitive;
     if (mode) body.mode = mode;
     if (typeof limit === "number") body.limit = limit;
 
