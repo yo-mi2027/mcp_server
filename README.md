@@ -54,6 +54,12 @@ cd mcp_server
   - Claude Desktop から MCP attach する場合は、`node /path/to/mcp_server/manual-tools-mcp/build/index.js` をコマンドとして指定してください（config 例: `args: [".../build/index.js"]`）。
   - API のベース URL を切り替える場合は `MANUAL_TOOLS_BASE_URL`（推奨）または `MANUAL_TOOLS_URL` を設定してください。未設定時は `http://127.0.0.1:5173` を参照します。
 
+### プロンプト & ワークフローの管理
+
+- 共通ハンドシェイクは `manual="運用仕様編"` の Location / Full Answer 仕様（section_id="01","02"）に集約しています。  
+- 案件固有のプロンプトは基本的に Claude 側で直接記述・改善し、必要に応じて `manuals/雑務用/` に草案を残してください。  
+- 再利用したいワークフローだけを別途マニュアル化したい場合は、任意の場所に `.txt` を追加し `get_section` で読ませる運用にしてください（必須ではありません）。
+
 ## コントリビュート
 
 1. ブランチを切る: `git checkout -b feature/...`

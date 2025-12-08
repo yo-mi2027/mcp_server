@@ -123,7 +123,7 @@ const server = new McpServer({
     "by reading the following sections via get_section:",
     " - Location Mode specification:   manual_name='運用仕様編', section_id='01'",
     " - Full Answer Mode specification: manual_name='運用仕様編', section_id='02'",
-    "Then follow those specifications:",
+    "After that, apply any task-specific prompts provided by the user (for example ad-hoc instructions pasted in the chat or stored in雑務用), then follow the specifications:",
     " - In Location Mode, use get_toc, search_text, find_exceptions, and (light) get_section calls",
     "   to build S0 (initial candidates) and S1 (final relevant section list) using the exploration and screening phases.",
     " - In Full Answer Mode, treat S1 as input, call get_section to read each section in full,",

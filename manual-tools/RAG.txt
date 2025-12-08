@@ -182,6 +182,19 @@ config.yaml の paths.indices_dir は、将来的な検索インデックスの�
 
 推論フローの全体像（探索 → 審査 → 統合）
 
+6.0 共通ルールの読み込み
+
+ユーザーの質問を処理する前に、MCP クライアント（Claude や Cursor）は次の順で
+最低限のガイドを読む。
+
+1. `manual="運用仕様編"` section_id="01"`（Location Mode specification）  
+2. `manual="運用仕様編"` section_id="02"`（Full Answer Mode specification）  
+   - 共通のハンドシェイクと lost in the middle 対策はこの2章に含める。
+
+案件固有のプロンプトは、必要に応じて Claude アプリ上で直接読み込ませるか、
+雑務用ディレクトリなどに個別ファイルとして置き、明示的に `get_section` する。
+このシンプルな Step0 の後に、探索・審査・統合フローへ進む。
+
 6.1 質問の意図解釈とマニュアル選択
 
 ユーザーの質問に対して、Claude（MCP クライアント）はまず次の情報を読み取る。
