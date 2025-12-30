@@ -16,6 +16,9 @@ var/
 # Generated indices (後で再生成できるなら無視でOK)
 indices/
 
+# Local-only manuals (keep out of Git)
+manuals/
+
 # Editor stuff
 .vscode/
 .idea/
