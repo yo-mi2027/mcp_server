@@ -12,7 +12,8 @@ cd mcp_server
 ### 初回セットアップ（manual-tools & manual-tools-mcp）
 
 1. **manual-tools（FastAPI サーバー）**  
-   前提: Docker Desktop（もしくは互換エンジン）を起動済みで、`manuals/` と `config.yaml` が揃っていること。
+   前提: Docker Desktop（もしくは互換エンジン）を起動済みで、`manuals/` と `config.yaml` が揃っていること。  
+   `manuals/` はユーザー自身が使いたいファイルを入れるローカル専用ディレクトリで、Git には含めません。
 
    ```bash
    cd manual-tools
@@ -53,6 +54,8 @@ cd mcp_server
 
   - Claude Desktop から MCP attach する場合は、`node /path/to/mcp_server/manual-tools-mcp/build/index.js` をコマンドとして指定してください（config 例: `args: [".../build/index.js"]`）。
   - API のベース URL を切り替える場合は `MANUAL_TOOLS_BASE_URL`（推奨）または `MANUAL_TOOLS_URL` を設定してください。未設定時は `http://127.0.0.1:5173` を参照します。
+  - MCP ツールは `list_manuals` / `get_toc` / `list_sections` / `get_section` / `search_text` / `find_exceptions` を提供します。
+    - `/resolve_reference` と `/get_outline` は FastAPI 側の HTTP では利用可能ですが、MCP では未公開です。
 
 ### プロンプト & ワークフローの管理
 
@@ -65,4 +68,3 @@ cd mcp_server
 1. ブランチを切る: `git checkout -b feature/...`
 2. `manual-tools` / `manual-tools-mcp` それぞれの lint / test を実行
 3. このリポジトリのルートでコミットして PR を作成
-

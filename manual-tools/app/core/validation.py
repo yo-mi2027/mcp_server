@@ -24,6 +24,7 @@ class ValidationIssue:
 # _CHAPTER_IN_TITLE = re.compile(r"^第\d+章(?:-\d+)?\s+")
 
 _ID_PREFIX = re.compile(r"^(?P<num>\d{2})(?:-(?P<sub>\d+))?")
+_ALLOWED_EXTENSIONS = {".txt", ".md", ".json"}
 
 
 def validate_toc_relaxed(toc: TocFile, manuals_root: Path) -> List[ValidationIssue]:
@@ -35,7 +36,8 @@ def validate_toc_relaxed(toc: TocFile, manuals_root: Path) -> List[ValidationIss
     seen_ids = set()
     for e in toc.toc:
         # file format / existence (missing files stay as WARN, do not block startup)
-        if "/" in e.file or "\\" in e.file or not e.file.endswith(".txt"):
+        ext = Path(e.file).suffix.lower()
+        if "/" in e.file or "\\" in e.file or ext not in _ALLOWED_EXTENSIONS:
             issues.append(ValidationIssue("WARN", f"file suspicious: {e.file}"))
         p = manuals_root / toc.manual / e.file
         if not p.exists():

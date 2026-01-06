@@ -15,7 +15,7 @@ class TocChild(BaseModel):
 class TocEntry(BaseModel):
     id: str                    # 形式は自由（"02-1" でも "02-1_入院" でもOK）
     title: str                 # "第2章-1 入院(...)" など
-    file: str                  # "02-1_入院.txt"
+    file: str                  # "02-1_入院.txt" (or .md / .json)
     children: Optional[List[TocChild]] = None
 
 class TocFile(BaseModel):
